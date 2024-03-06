@@ -1,4 +1,5 @@
 import arcade
+from constants import *
 
 class Game(arcade.Window):
     def __init__(self, width, height, title) : 
@@ -6,7 +7,7 @@ class Game(arcade.Window):
         super().__init__(width, height, title) 
 
         #Создаем объект шарик
-        self.ball = Ball(300, 300, 3)
+        self.ball = Ball(300, 300, 3, 2)
 
     def on_draw(self):
         #делает отрисовку
@@ -21,22 +22,33 @@ class Game(arcade.Window):
 
 class Ball(arcade.Sprite):
     #Описываю шарик
-    def __init__(self, x, y, speed):
+    def __init__(self, x, y, speed_x, speed_y):
         super().__init__(filename = "C:\\MyPrograms\\arcade\\pin_pong\\ball.png", scale = 0.2)
         #устанавливаем атрибутам положение и скорость
         self.center_x = x
         self.center_y = y
-        self.change_x = speed
+
+        #задаем скорость
+        self.change_x = speed_x
+        self.change_y = speed_y
 
     def update(self):
         #обновление положения и логика
         self.center_x += self.change_x
+        self.center_y += self.change_y
 
-        if self.right > 600:
+        if self.right > SCREEN_WIDTH:
             self.change_x *= -1
         
         if self.left < 0:
             self.change_x *= -1
+
+        if self.bottom < 0:
+            self.change_y *= -1
+
+        if self.top > SCREEN_HEIGHT:
+            self.change_y *= -1
+
 
 
     
@@ -62,6 +74,6 @@ class Ball(arcade.Sprite):
 
 
 #coздаем окно
-window = Game(600, 600, 'Пинг-Понг')
+window = Game(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 #запускаем игровой движок 
 arcade.run()

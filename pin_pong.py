@@ -49,8 +49,16 @@ class Ball(arcade.Sprite):
         if self.top > SCREEN_HEIGHT:
             self.change_y *= -1
 
+class Bar(arcade.Sprite):
+    def __init__(self, x, y, speed):
+        super().__init__(filename = "C:\\MyPrograms\\arcade\\pin_pong\\bar.png", scale = 0.2)
+        self.center_x = x
+        self.center_y = y
+        self.change_x = speed
 
-
+    def update(self):
+        self.center_x += self.change_x
+        
     
 
 

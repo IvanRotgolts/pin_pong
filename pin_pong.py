@@ -7,7 +7,8 @@ class Game(arcade.Window):
     def __init__(self, width, height, title) : 
         #функция super вызывает конструктор класса родителя и передает ему аргументы(значения)
         super().__init__(width, height, title) 
-
+        self.score = 0 
+        self.game_status = True
         #Создаем объект шарик
         self.ball = Ball(300, 300, 3, 2)
 
@@ -18,17 +19,37 @@ class Game(arcade.Window):
         self.background_color = (0, 128, 128)
         self.clear()
 
+        #отрисовываем надпись для счета
+        arcade.draw_text(
+            f"счет: {self.score}",
+            10,
+            10,
+            (139, 0, 0),
+            25
+            )
         self.ball.draw()
-
         self.bar.draw()
+        if not self.game_status:
+            pass
+        #отрисовать сообщение о проигрыше
+        #отрисовать сообщение о выигрые (100 очков)
     
     def update(self, delta_time: float):
-        #обновляет положение
-        self.ball.update()
+        if self.game_status:
+            #обновляет положение
+            self.ball.update()
 
-        self.bar.update()
-
-        print(arcade.check_for_collision(self.ball, self.bar))
+            self.bar.update()
+        
+            if self.ball.bottom <= 0:
+                self.game_status = False
+            #проверняем на столкновение ракетку и мяч
+            collision = arcade.check_for_collision(self.ball, self.bar)
+            if collision:
+                self.ball.bottom = self.bar.top + 5
+                self.ball.rise_speed(0.5)
+                self.ball.change_y = -self.ball.change_y
+                self.score += 1
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.LEFT:
@@ -74,6 +95,10 @@ class Ball(arcade.Sprite):
         if self.top > SCREEN_HEIGHT:
             self.change_y *= -1
 
+    def rise_speed(self, offset):
+        self.change_x += offset
+        self.change_y += offset
+            
 class Bar(arcade.Sprite):
     """описывает объект ракетки"""
     def __init__(self, x, y, speed):
@@ -84,6 +109,12 @@ class Bar(arcade.Sprite):
 
     def update(self):
         self.center_x += self.change_x
+
+        if self.left <= 0:
+            self.change_x *= -1
+
+        if self.right >= 600:
+            self.change_x *= -1
         
     
 

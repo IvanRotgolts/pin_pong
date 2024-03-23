@@ -9,6 +9,7 @@ class Game(arcade.Window):
         super().__init__(width, height, title) 
         self.score = 0 
         self.game_status = True
+        self.victory = False
         #Создаем объект шарик
         self.ball = Ball(300, 300, 3, 2)
 
@@ -18,6 +19,9 @@ class Game(arcade.Window):
         #делает отрисовку
         self.background_color = (0, 128, 128)
         self.clear()
+        #отрисовка шарика и ракетки
+        self.ball.draw()
+        self.bar.draw()
 
         #отрисовываем надпись для счета
         arcade.draw_text(
@@ -27,10 +31,22 @@ class Game(arcade.Window):
             (139, 0, 0),
             25
             )
-        self.ball.draw()
-        self.bar.draw()
+        if self.victory:
+            arcade.draw_text(
+            "Вы победили",
+            100,
+            300,
+            (139, 0, 0),
+            50
+            )
         if not self.game_status:
-            pass
+            arcade.draw_text(
+            "Вы проиграли",
+            100,
+            300,
+            (139, 0, 0),
+            50
+            )
         #отрисовать сообщение о проигрыше
         #отрисовать сообщение о выигрые (100 очков)
     
@@ -46,10 +62,13 @@ class Game(arcade.Window):
             #проверняем на столкновение ракетку и мяч
             collision = arcade.check_for_collision(self.ball, self.bar)
             if collision:
-                self.ball.bottom = self.bar.top + 5
-                self.ball.rise_speed(0.5)
+                self.ball.bottom = self.bar.top + 15
+                self.ball.rise_speed(1)
                 self.ball.change_y = -self.ball.change_y
                 self.score += 1
+            
+            if self.score == 3:
+                self.victory = True
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.LEFT:
@@ -69,7 +88,7 @@ class Game(arcade.Window):
 class Ball(arcade.Sprite):
     #Описываю шарик
     def __init__(self, x, y, speed_x, speed_y):
-        super().__init__(filename = BASE_PATH + "\\ball.png", scale = 0.15)
+        super().__init__(filename = BASE_PATH + "\\ball.png", scale = 0.05)
         #устанавливаем атрибутам положение и скорость
         self.center_x = x
         self.center_y = y
@@ -102,7 +121,7 @@ class Ball(arcade.Sprite):
 class Bar(arcade.Sprite):
     """описывает объект ракетки"""
     def __init__(self, x, y, speed):
-        super().__init__(filename = BASE_PATH + "\\bar.png", scale = 0.1)
+        super().__init__(filename = BASE_PATH + "\\bar.png", scale = 0.05)
         self.center_x = x
         self.center_y = y
         self.change_x = speed
